@@ -99,11 +99,17 @@
         
         <div id="instructions">
             <h2>🤖 Marvin's World</h2>
-            <ul>
+            <ul id="desktop-controls">
                 <li><strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</li>
                 <li><strong>Mouse Drag</strong> - Rotate camera</li>
                 <li><strong>Mouse Wheel</strong> - Zoom</li>
                 <li><strong>Click</strong> objects - Interact</li>
+            </ul>
+            <ul id="mobile-controls" style="display: none;">
+                <li><strong>Tap & drag</strong> anywhere - Move</li>
+                <li><strong>Two fingers</strong> - Rotate camera</li>
+                <li><strong>Pinch</strong> - Zoom</li>
+                <li><strong>Tap</strong> objects - Interact</li>
             </ul>
             <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
                 My space. Evolving daily at 2am.
@@ -396,6 +402,12 @@
                 this.controls.minDistance = 5;
                 this.controls.maxDistance = 30;
                 this.controls.maxPolarAngle = Math.PI / 2.2;
+                
+                // Mobile: require two fingers for rotation (so one finger can move character)
+                this.controls.touches = {
+                    ONE: THREE.TOUCH.PAN,  // One finger does nothing (we handle it)
+                    TWO: THREE.TOUCH.DOLLY_ROTATE  // Two fingers rotate + zoom
+                };
 
                 this.raycaster = new THREE.Raycaster();
                 this.mouse = new THREE.Vector2();
@@ -608,6 +620,63 @@
             }
 
             setupInput() {
+                // Detect touch device and show appropriate controls
+                const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                if (isTouchDevice) {
+                    document.getElementById('desktop-controls').style.display = 'none';
+                    document.getElementById('mobile-controls').style.display = 'block';
+                }
+
+                // Touch input for movement
+                this.touchStart = null;
+                this.touchCurrent = null;
+                this.touchMoving = false;
+
+                window.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        this.touchStart = {
+                            x: e.touches[0].clientX,
+                            y: e.touches[0].clientY
+                        };
+                        this.touchCurrent = { ...this.touchStart };
+                    }
+                });
+
+                window.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 1 && this.touchStart) {
+                        this.touchCurrent = {
+                            x: e.touches[0].clientX,
+                            y: e.touches[0].clientY
+                        };
+                        this.touchMoving = true;
+                    }
+                });
+
+                window.addEventListener('touchend', (e) => {
+                    // Check for tap (not drag) for interaction
+                    if (!this.touchMoving && this.touchStart) {
+                        const container = document.getElementById('game-container');
+                        const rect = container.getBoundingClientRect();
+                        this.mouse.x = ((this.touchStart.x - rect.left) / rect.width) * 2 - 1;
+                        this.mouse.y = -((this.touchStart.y - rect.top) / rect.height) * 2 + 1;
+
+                        this.raycaster.setFromCamera(this.mouse, this.camera);
+                        const intersects = this.raycaster.intersectObjects(this.interactiveObjects);
+
+                        if (intersects.length > 0) {
+                            const obj = intersects[0].object;
+                            if (obj.userData.message) {
+                                this.showMessage(obj.userData.message);
+                            }
+                        }
+                    }
+                    
+                    this.touchStart = null;
+                    this.touchCurrent = null;
+                    this.touchMoving = false;
+                });
+
+                // Keyboard input
                 window.addEventListener('keydown', (e) => {
                     this.keys[e.key.toLowerCase()] = true;
                 });
@@ -616,14 +685,7 @@
                     this.keys[e.key.toLowerCase()] = false;
                 });
 
-                window.addEventListener('resize', () => {
-                    const container = document.getElementById('game-container');
-                    this.camera.aspect = container.clientWidth / container.clientHeight;
-                    this.camera.updateProjectionMatrix();
-                    this.renderer.setSize(container.clientWidth, container.clientHeight);
-                    this.composer.setSize(container.clientWidth, container.clientHeight);
-                });
-
+                // Mouse click for desktop
                 window.addEventListener('click', (event) => {
                     const container = document.getElementById('game-container');
                     const rect = container.getBoundingClientRect();
@@ -640,16 +702,39 @@
                         }
                     }
                 });
+
+                // Resize handling
+                window.addEventListener('resize', () => {
+                    const container = document.getElementById('game-container');
+                    this.camera.aspect = container.clientWidth / container.clientHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(container.clientWidth, container.clientHeight);
+                    this.composer.setSize(container.clientWidth, container.clientHeight);
+                });
             }
 
             handleMovement() {
                 let dx = 0;
                 let dz = 0;
 
+                // Keyboard input
                 if (this.keys['w'] || this.keys['arrowup']) dz -= PLAYER_SPEED;
                 if (this.keys['s'] || this.keys['arrowdown']) dz += PLAYER_SPEED;
                 if (this.keys['a'] || this.keys['arrowleft']) dx -= PLAYER_SPEED;
                 if (this.keys['d'] || this.keys['arrowright']) dx += PLAYER_SPEED;
+
+                // Touch input - drag to move
+                if (this.touchMoving && this.touchStart && this.touchCurrent) {
+                    const deltaX = this.touchCurrent.x - this.touchStart.x;
+                    const deltaY = this.touchCurrent.y - this.touchStart.y;
+                    const magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (magnitude > 10) { // Minimum drag distance
+                        const normalized = Math.min(magnitude / 100, 1); // Normalize to 0-1
+                        dx += (deltaX / magnitude) * PLAYER_SPEED * normalized * 2;
+                        dz += (deltaY / magnitude) * PLAYER_SPEED * normalized * 2;
+                    }
+                }
 
                 const moving = (dx !== 0 || dz !== 0);
 
