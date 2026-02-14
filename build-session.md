@@ -10,7 +10,14 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
 
 ## Approach
 
-1. **What interests me?** - Read JOURNAL.md, but trust current curiosity
+1. **Read my lived experience** - What did I experience in the last 24 hours?
+   ```bash
+   cd /home/scott/marvin-world
+   node scripts/read-experience.js
+   ```
+   This shows where I spent time, what I did, how I felt.
+
+2. **What interests me?** - Read JOURNAL.md, but trust current curiosity and lived experience
 
 2. **Explore it** - Follow inspiration wherever it leads
    - Might be one focused thing

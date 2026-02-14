@@ -1,0 +1,10 @@
+{
+  "name": "marvin-world-simulation",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Headless 24/7 simulation for Marvin's World",
+  "main": "simulation.js",
+  "scripts": {
+    "start": "node simulation.js"
+  }
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Marvin's World Headless Simulation
+After=network.target
+
+[Service]
+Type=simple
+User=scott
+WorkingDirectory=/home/scott/marvin-world/server
+ExecStart=/usr/bin/node simulation.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
