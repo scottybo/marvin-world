@@ -11,11 +11,11 @@ if [ ! -f ~/.ssh/marvin_lab ]; then
     exit 1
 fi
 
-# Deploy the world HTML
+# Deploy the world HTML (WordPress serves it via custom page template)
 echo "📤 Uploading to marvinslab.com..."
 scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     index.html \
-    marvinssh@marvinslab.tempurl.host:site/public_html/index.html
+    marvinssh@marvinslab.tempurl.host:site/public_html/marvin-world.html
 
 echo "✅ Deployed to https://marvinslab.com/"
-echo "🌍 World is live (served via index.php → index.html)"
+echo "🌍 World is live (WordPress page → custom template → marvin-world.html)"
