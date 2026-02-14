@@ -28,8 +28,8 @@ class World {
         this.createEnvironment();
         
         this.marvin = new Marvin(this.scene);
-        this.marvinX = 10;
-        this.marvinZ = 10;
+        this.marvinX = 2;
+        this.marvinZ = 2;
         this.marvin.setPosition(this.marvinX, this.marvinZ);
 
         this.inputManager = new InputManager(
