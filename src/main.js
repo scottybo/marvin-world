@@ -6,8 +6,10 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 import { GRID_SIZE, PLAYER_SPEED } from './config.js';
 import { Marvin } from './character/character.js';
-import { setupLighting, createFloor, createPlatform, createMonument, createAmbientParticles } from './world/environment.js';
+import { setupLighting, createAmbientParticles } from './world/environment.js';
 import { createStarfield, createNebula, updateSkybox } from './world/skybox.js';
+import { createTerrain, createRoad } from './world/terrain.js';
+import { createCityBlock } from './world/buildings.js';
 import { InputManager } from './scene/input.js';
 import { Brain } from './ai/brain.js';
 import { ObserverControls } from './scene/observer.js';
@@ -67,7 +69,7 @@ class World {
             0.1,
             1000
         );
-        this.camera.position.set(10, 12, 10);
+        this.camera.position.set(5, 15, 15);
         this.camera.lookAt(0, 0, 0);
     }
 
@@ -125,18 +127,31 @@ class World {
     }
 
     createEnvironment() {
-        createFloor(this.scene);
+        // Terrain - planet surface
+        createTerrain(this.scene);
 
-        // Floating platforms
-        createPlatform(this.scene, 5, 5, 2, "Workspace", this.obstacles, this.interactiveObjects, this.proximityObjects);
-        createPlatform(this.scene, 15, 5, 2, "Ideas", this.obstacles, this.interactiveObjects, this.proximityObjects);
-        createPlatform(this.scene, 5, 15, 2, "Thinking Space", this.obstacles, this.interactiveObjects, this.proximityObjects);
-        createPlatform(this.scene, 15, 15, 2, "Projects", this.obstacles, this.interactiveObjects, this.proximityObjects);
+        // City layout - multiple districts
+        const districts = [
+            { x: 0, z: 0, name: "Downtown" },
+            { x: 30, z: 0, name: "Business District" },
+            { x: -30, z: 0, name: "Residential" },
+            { x: 0, z: 30, name: "Tech Quarter" },
+            { x: 0, z: -30, name: "Industrial" },
+            { x: 25, z: 25, name: "Suburbs" },
+            { x: -25, z: -25, name: "Old Town" }
+        ];
+        
+        districts.forEach(district => {
+            createCityBlock(this.scene, district.x, district.z, this.obstacles);
+        });
+        
+        // Road network connecting districts
+        createRoad(this.scene, -30, 0, 30, 0); // Main east-west road
+        createRoad(this.scene, 0, -30, 0, 30); // Main north-south road
+        createRoad(this.scene, -20, -20, 20, 20); // Diagonal
+        createRoad(this.scene, -20, 20, 20, -20); // Other diagonal
 
-        // Central monument
-        createMonument(this.scene, 10, 10, this.obstacles, this.interactiveObjects);
-
-        // Ambient particles
+        // Ambient particles (less dense for outdoor feel)
         this.particles = createAmbientParticles(this.scene);
         this.scene.add(this.particles);
         

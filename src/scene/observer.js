@@ -9,9 +9,9 @@ export class ObserverControls {
         
         // Default follow mode ON (especially important for mobile)
         this.followMode = true;
-        this.followDistance = 12;
-        this.followHeight = 10;
-        this.followSmoothing = 0.05;
+        this.followDistance = 15;
+        this.followHeight = 12;
+        this.followSmoothing = 0.08;
         
         // Desktop: Press 'F' to toggle follow mode
         const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;

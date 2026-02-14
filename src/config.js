@@ -1,5 +1,5 @@
 // World configuration and constants
-export const GRID_SIZE = 20;
+export const GRID_SIZE = 100; // Larger world for GTA-style exploration
 export const PLAYER_SPEED = 0.08;
 
 export const COLORS = {

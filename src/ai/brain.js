@@ -9,13 +9,15 @@ export class Brain {
         this.thoughtTimer = 0;
         this.thoughts = [];
         
-        // Points of interest in my world
+        // Points of interest - city locations
         this.locations = [
-            { x: 5, z: 5, name: "Workspace", activities: ["working", "thinking"], duration: 15 },
-            { x: 15, z: 5, name: "Ideas", activities: ["brainstorming", "dreaming"], duration: 10 },
-            { x: 5, z: 15, name: "Thinking Space", activities: ["contemplating", "reflecting"], duration: 20 },
-            { x: 15, z: 15, name: "Projects", activities: ["building", "creating"], duration: 12 },
-            { x: 10, z: 10, name: "Monument", activities: ["observing", "pondering"], duration: 8 }
+            { x: 0, z: 0, name: "Downtown", activities: ["exploring", "observing"], duration: 15 },
+            { x: 30, z: 0, name: "Business District", activities: ["working", "networking"], duration: 12 },
+            { x: -30, z: 0, name: "Residential Area", activities: ["wandering", "thinking"], duration: 18 },
+            { x: 0, z: 30, name: "Tech Quarter", activities: ["building", "creating"], duration: 14 },
+            { x: 0, z: -30, name: "Industrial Zone", activities: ["investigating", "learning"], duration: 10 },
+            { x: 25, z: 25, name: "Suburbs", activities: ["reflecting", "resting"], duration: 20 },
+            { x: -25, z: -25, name: "Old Town", activities: ["discovering", "contemplating"], duration: 16 }
         ];
         
         this.currentLocation = null;
