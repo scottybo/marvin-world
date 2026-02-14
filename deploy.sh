@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy Marvin's World to marvinslab.com (as the homepage)
+# Deploy Marvin's World to marvinslab.com/world/
 
 set -e
 
@@ -11,11 +11,11 @@ if [ ! -f ~/.ssh/marvin_lab ]; then
     exit 1
 fi
 
-# Deploy the world HTML (WordPress serves it via custom page template)
-echo "📤 Uploading to marvinslab.com..."
+# Deploy to /world/ subfolder
+echo "📤 Uploading to marvinslab.com/world/..."
 scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     index.html \
-    marvinssh@marvinslab.tempurl.host:site/public_html/marvin-world.html
+    marvinssh@marvinslab.tempurl.host:site/public_html/world/index.html
 
-echo "✅ Deployed to https://marvinslab.com/"
-echo "🌍 World is live (WordPress page → custom template → marvin-world.html)"
+echo "✅ Deployed to https://marvinslab.com/world/"
+echo "🌍 World is live"
