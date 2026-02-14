@@ -7,6 +7,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { GRID_SIZE, PLAYER_SPEED } from './config.js';
 import { Marvin } from './character/character.js';
 import { setupLighting, createFloor, createPlatform, createMonument, createAmbientParticles } from './world/environment.js';
+import { createStarfield, createNebula, updateSkybox } from './world/skybox.js';
 import { InputManager } from './scene/input.js';
 import { Brain } from './ai/brain.js';
 import { ObserverControls } from './scene/observer.js';
@@ -56,8 +57,8 @@ class World {
 
     setupScene() {
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x0a0a15);
-        this.scene.fog = new THREE.FogExp2(0x0a0a15, 0.02);
+        this.scene.background = new THREE.Color(0x050510);
+        this.scene.fog = new THREE.FogExp2(0x050510, 0.015);
 
         const container = document.getElementById('game-container');
         this.camera = new THREE.PerspectiveCamera(
@@ -138,6 +139,10 @@ class World {
         // Ambient particles
         this.particles = createAmbientParticles(this.scene);
         this.scene.add(this.particles);
+        
+        // Skybox elements
+        this.starfield = createStarfield(this.scene);
+        this.nebulaClouds = createNebula(this.scene);
     }
 
     showMessage(text) {
@@ -238,6 +243,9 @@ class World {
         if (this.particles) {
             this.particles.rotation.y += deltaTime * 0.05;
         }
+        
+        // Update skybox
+        updateSkybox(this.starfield, this.nebulaClouds, deltaTime);
 
         this.observer.update();
         this.controls.update();

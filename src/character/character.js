@@ -16,85 +16,126 @@ export class Marvin {
     }
 
     createCharacter() {
-        // Body (smooth capsule-like form)
-        const bodyGeom = new THREE.CapsuleGeometry(0.25, 0.6, 16, 32);
+        // Modern robot design - sleek and futuristic
+        
+        // Body - elongated capsule with metallic finish
+        const bodyGeom = new THREE.CapsuleGeometry(0.3, 0.8, 32, 64);
         const bodyMat = new THREE.MeshStandardMaterial({ 
-            color: COLORS.marvinBody,
-            metalness: 0.6,
-            roughness: 0.3,
-            emissive: COLORS.primary,
-            emissiveIntensity: 0.1
+            color: 0xffffff,
+            metalness: 0.95,
+            roughness: 0.15,
+            emissive: COLORS.accent,
+            emissiveIntensity: 0.2,
+            envMapIntensity: 1.5
         });
         const body = new THREE.Mesh(bodyGeom, bodyMat);
         body.castShadow = true;
         this.group.add(body);
 
-        // Head (sphere)
-        const headGeom = new THREE.SphereGeometry(0.3, 32, 32);
+        // Chest panel - glowing hexagon
+        const hexShape = new THREE.Shape();
+        const hexRadius = 0.15;
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const x = Math.cos(angle) * hexRadius;
+            const y = Math.sin(angle) * hexRadius;
+            if (i === 0) hexShape.moveTo(x, y);
+            else hexShape.lineTo(x, y);
+        }
+        hexShape.closePath();
+        
+        const hexGeom = new THREE.ExtrudeGeometry(hexShape, { depth: 0.02, bevelEnabled: false });
+        const hexMat = new THREE.MeshStandardMaterial({
+            color: COLORS.accent,
+            emissive: COLORS.accent,
+            emissiveIntensity: 2,
+            metalness: 1,
+            roughness: 0
+        });
+        const hexPanel = new THREE.Mesh(hexGeom, hexMat);
+        hexPanel.position.set(0, 0.1, 0.28);
+        hexPanel.rotation.y = Math.PI / 2;
+        this.group.add(hexPanel);
+        
+        // Chest panel light
+        const panelLight = new THREE.PointLight(COLORS.accent, 1.5, 3);
+        panelLight.position.set(0, 0.1, 0.35);
+        this.group.add(panelLight);
+        this.chestLight = panelLight;
+
+        // Head - smooth sphere with metallic finish
+        const headGeom = new THREE.SphereGeometry(0.35, 64, 64);
         const headMat = new THREE.MeshStandardMaterial({ 
-            color: COLORS.marvinHighlight,
-            metalness: 0.7,
-            roughness: 0.2,
+            color: 0xf0f0f0,
+            metalness: 0.9,
+            roughness: 0.1,
             emissive: COLORS.primary,
-            emissiveIntensity: 0.15
+            emissiveIntensity: 0.1,
+            envMapIntensity: 2
         });
         const head = new THREE.Mesh(headGeom, headMat);
-        head.position.y = 0.65;
+        head.position.y = 0.75;
         head.castShadow = true;
         this.group.add(head);
+        
+        // Visor - dark glass strip across face
+        const visorGeom = new THREE.BoxGeometry(0.5, 0.12, 0.05);
+        const visorMat = new THREE.MeshStandardMaterial({
+            color: 0x000000,
+            metalness: 1,
+            roughness: 0.1,
+            emissive: COLORS.accent,
+            emissiveIntensity: 0.3,
+            transparent: true,
+            opacity: 0.9
+        });
+        const visor = new THREE.Mesh(visorGeom, visorMat);
+        visor.position.set(0, 0.75, 0.32);
+        this.group.add(visor);
 
-        // Eyes (glowing spheres)
-        const eyeGeom = new THREE.SphereGeometry(0.06, 16, 16);
+        // Eye lights behind visor (glowing effect)
+        const eyeGeom = new THREE.SphereGeometry(0.04, 16, 16);
         const eyeMat = new THREE.MeshStandardMaterial({ 
-            color: COLORS.marvinEye,
-            emissive: COLORS.marvinEye,
-            emissiveIntensity: 1.0,
+            color: COLORS.accent,
+            emissive: COLORS.accent,
+            emissiveIntensity: 3,
             metalness: 1,
             roughness: 0
         });
         
         const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
-        leftEye.position.set(-0.12, 0.7, 0.25);
+        leftEye.position.set(-0.1, 0.75, 0.3);
         this.group.add(leftEye);
 
         const rightEye = new THREE.Mesh(eyeGeom, eyeMat);
-        rightEye.position.set(0.12, 0.7, 0.25);
+        rightEye.position.set(0.1, 0.75, 0.3);
         this.group.add(rightEye);
 
         // Eye lights
-        const eyeLight = new THREE.PointLight(COLORS.marvinEye, 0.8, 2);
-        eyeLight.position.set(0, 0.7, 0.3);
+        const eyeLight = new THREE.PointLight(COLORS.accent, 1.5, 2);
+        eyeLight.position.set(0, 0.75, 0.35);
         this.group.add(eyeLight);
+        this.eyeLight = eyeLight;
 
-        // Antenna (thin cylinder with glowing tip)
-        const antennaGeom = new THREE.CylinderGeometry(0.015, 0.015, 0.4, 8);
-        const antennaMat = new THREE.MeshStandardMaterial({ 
-            color: COLORS.marvinBody,
+        // No antenna - cleaner modern look
+        
+        // Shoulders - small spheres
+        const shoulderGeom = new THREE.SphereGeometry(0.12, 16, 16);
+        const shoulderMat = new THREE.MeshStandardMaterial({
+            color: 0xe0e0e0,
             metalness: 0.9,
-            roughness: 0.1
+            roughness: 0.2
         });
-        const antenna = new THREE.Mesh(antennaGeom, antennaMat);
-        antenna.position.y = 1.05;
-        this.group.add(antenna);
-
-        // Antenna tip (glowing sphere)
-        const tipGeom = new THREE.SphereGeometry(0.05, 16, 16);
-        const tipMat = new THREE.MeshStandardMaterial({ 
-            color: COLORS.antenna,
-            emissive: COLORS.antenna,
-            emissiveIntensity: 1.5,
-            metalness: 1,
-            roughness: 0
-        });
-        this.antennaTip = new THREE.Mesh(tipGeom, tipMat);
-        this.antennaTip.position.y = 1.25;
-        this.group.add(this.antennaTip);
-
-        // Antenna light
-        const tipLight = new THREE.PointLight(COLORS.antenna, 1, 3);
-        tipLight.position.y = 1.25;
-        this.group.add(tipLight);
-        this.antennaLight = tipLight;
+        
+        const leftShoulder = new THREE.Mesh(shoulderGeom, shoulderMat);
+        leftShoulder.position.set(-0.35, 0.3, 0);
+        leftShoulder.castShadow = true;
+        this.group.add(leftShoulder);
+        
+        const rightShoulder = new THREE.Mesh(shoulderGeom, shoulderMat);
+        rightShoulder.position.set(0.35, 0.3, 0);
+        rightShoulder.castShadow = true;
+        this.group.add(rightShoulder);
 
         this.group.position.y = this.baseY;
     }
@@ -169,10 +210,16 @@ export class Marvin {
         const float = Math.sin(this.idleTime * 2) * 0.03;
         this.group.position.y = this.baseY + float;
         
-        // Antenna pulse
+        // Chest panel pulse
         const pulse = (Math.sin(this.idleTime * 3) + 1) * 0.5 + 0.5;
-        this.antennaTip.material.emissiveIntensity = 1 + pulse;
-        this.antennaLight.intensity = 0.5 + pulse * 0.5;
+        if (this.chestLight) {
+            this.chestLight.intensity = 1 + pulse * 0.5;
+        }
+        
+        // Eye glow pulse (subtle)
+        if (this.eyeLight) {
+            this.eyeLight.intensity = 1.2 + pulse * 0.3;
+        }
         
         // Rotate aura
         if (this.aura) {
