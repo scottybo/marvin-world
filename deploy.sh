@@ -17,5 +17,10 @@ scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     index.html \
     marvinssh@marvinslab.tempurl.host:site/public_html/index.html
 
+# Move WordPress index.php out of the way if it exists
+echo "🔧 Ensuring WordPress doesn't override..."
+ssh -i ~/.ssh/marvin_lab marvinssh@marvinslab.tempurl.host \
+    "cd site/public_html && [ -f index.php ] && mv index.php wordpress.php || true"
+
 echo "✅ Deployed to https://marvinslab.com/"
 echo "🌍 World is live (homepage)"
