@@ -15,6 +15,7 @@ import { InputManager } from './scene/input.js';
 import { Brain } from './ai/brain.js';
 import { ObserverControls } from './scene/observer.js';
 import { updateHUD } from './ui/hud.js';
+import { SensorySystem } from './perception/senses.js';
 
 class World {
     constructor() {
@@ -51,6 +52,9 @@ class World {
             this.camera,
             () => ({ x: this.marvinX, y: 0, z: this.marvinZ })
         );
+        
+        // Sensory perception system
+        this.senses = new SensorySystem(this.scene, this.camera, this.marvin);
 
         this.clock = new THREE.Clock();
 
@@ -271,6 +275,10 @@ class World {
         // Update weather
         updateRain(this.rain, deltaTime);
         updatePuddles(this.puddles, this.clock.getElapsedTime());
+        
+        // Update sensory perception
+        this.senses.updateFirstPersonCamera(this.marvinX, this.marvinZ);
+        this.senses.logPerception(this.marvinX, this.marvinZ, this.clock.getElapsedTime());
 
         this.observer.update();
         this.controls.update();
