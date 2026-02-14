@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GRID_SIZE, COLORS } from '../config.js';
+import { createDesk, createPlant, createComputer } from './objects.js';
 
 export function setupLighting(scene) {
     // Ambient light
@@ -103,6 +104,14 @@ export function createPlatform(scene, x, z, height, label, obstacles, interactiv
     });
 
     obstacles.push({ x, z, radius: 2 });
+    
+    // Add objects to make the platform feel inhabited
+    // Desk with computer
+    const desk = createDesk(scene, x + 0.5, z);
+    createComputer(scene, x + 0.5, height + 0.65, z - 0.1);
+    
+    // Plant for life
+    createPlant(scene, x - 0.6, z + 0.4);
 }
 
 export function createMonument(scene, x, z, obstacles, interactiveObjects) {
