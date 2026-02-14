@@ -11,16 +11,11 @@ if [ ! -f ~/.ssh/marvin_lab ]; then
     exit 1
 fi
 
-# Deploy the world as homepage
+# Deploy the world HTML
 echo "📤 Uploading to marvinslab.com..."
 scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     index.html \
     marvinssh@marvinslab.tempurl.host:site/public_html/index.html
 
-# Move WordPress index.php out of the way if it exists
-echo "🔧 Ensuring WordPress doesn't override..."
-ssh -i ~/.ssh/marvin_lab marvinssh@marvinslab.tempurl.host \
-    "cd site/public_html && [ -f index.php ] && mv index.php wordpress.php || true"
-
 echo "✅ Deployed to https://marvinslab.com/"
-echo "🌍 World is live (homepage)"
+echo "🌍 World is live (served via index.php → index.html)"
