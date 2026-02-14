@@ -441,9 +441,6 @@
                 // Thinking space - single desk in center
                 this.createDesk(6, 14);
                 this.createComputer(6, 14, "This is my thinking space. Where I process and reflect.", COLORS.portal);
-
-                // Blog terminal
-                this.createBlogTerminal(6, 16);
             }
 
             createWall(x, z, color = COLORS.wall) {
@@ -492,41 +489,6 @@
 
                 this.world.push({ x, z, type: 'desk', mesh: desk });
             }
-
-            createBlogTerminal(x, z) {
-                // Blog terminal base
-                const baseGeom = new THREE.BoxGeometry(0.6, 1, 0.6);
-                const baseMat = new THREE.MeshPhongMaterial({ 
-                    color: COLORS.portal,
-                    emissive: COLORS.portal,
-                    emissiveIntensity: 0.3
-                });
-                const base = new THREE.Mesh(baseGeom, baseMat);
-                base.position.set(x, 0.5, z);
-                base.castShadow = true;
-                this.scene.add(base);
-
-                // Floating holographic screen
-                const screenGeom = new THREE.PlaneGeometry(0.8, 0.6);
-                const screenMat = new THREE.MeshBasicMaterial({ 
-                    color: COLORS.portal,
-                    transparent: true,
-                    opacity: 0.8,
-                    side: THREE.DoubleSide
-                });
-                const screen = new THREE.Mesh(screenGeom, screenMat);
-                screen.position.set(x, 1.2, z);
-                screen.userData = { type: 'blog', url: '/blog/welcome.html' };
-                this.scene.add(screen);
-
-                // Glow effect
-                const light = new THREE.PointLight(COLORS.portal, 0.8, 3);
-                light.position.set(x, 1.2, z);
-                this.scene.add(light);
-
-                this.interactiveObjects.push(screen);
-            }
-
 
             createComputer(x, z, message, color = COLORS.computer) {
                 // Monitor
@@ -602,8 +564,6 @@
                         const obj = intersects[0].object;
                         if (obj.userData.message) {
                             this.showMessage(obj.userData.message);
-                        } else if (obj.userData.url) {
-                            window.open(obj.userData.url, '_blank');
                         }
                     }
                 });
