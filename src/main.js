@@ -8,6 +8,9 @@ import { GRID_SIZE, PLAYER_SPEED } from './config.js';
 import { Marvin } from './character/character.js';
 import { setupLighting, createFloor, createPlatform, createMonument, createAmbientParticles } from './world/environment.js';
 import { InputManager } from './scene/input.js';
+import { Brain } from './ai/brain.js';
+import { ObserverControls } from './scene/observer.js';
+import { updateHUD } from './ui/hud.js';
 
 class World {
     constructor() {
@@ -33,6 +36,16 @@ class World {
             this.camera,
             this.interactiveObjects,
             (msg) => this.showMessage(msg)
+        );
+        
+        // Marvin's brain - autonomous behavior
+        this.brain = new Brain(this);
+        
+        // Observer mode camera controls
+        this.observer = new ObserverControls(
+            this.controls,
+            this.camera,
+            () => ({ x: this.marvinX, y: 0, z: this.marvinZ })
         );
 
         this.clock = new THREE.Clock();
@@ -142,12 +155,16 @@ class World {
     }
 
     handleMovement() {
-        const { dx, dz } = this.inputManager.getMovementInput();
-        const moving = (dx !== 0 || dz !== 0);
+        // Get autonomous movement from brain
+        const { dx, dz, moving } = this.brain.update(
+            this.clock.getDelta(),
+            this.marvinX,
+            this.marvinZ
+        );
 
         if (moving) {
-            const newX = this.marvinX + dx * PLAYER_SPEED;
-            const newZ = this.marvinZ + dz * PLAYER_SPEED;
+            const newX = this.marvinX + dx;
+            const newZ = this.marvinZ + dz;
 
             if (this.canMove(newX, newZ)) {
                 this.marvinX = newX;
@@ -210,6 +227,8 @@ class World {
         requestAnimationFrame(() => this.animate());
 
         const deltaTime = this.clock.getDelta();
+        
+        // Marvin moves autonomously
         const isMoving = this.handleMovement();
         
         this.marvin.update(deltaTime, isMoving);
@@ -220,7 +239,12 @@ class World {
             this.particles.rotation.y += deltaTime * 0.05;
         }
 
+        this.observer.update();
         this.controls.update();
+        
+        // Update HUD with current thought
+        updateHUD(this.brain);
+        
         this.composer.render();
     }
 }
