@@ -1,6 +1,21 @@
-# Headless Simulation Server
+# Embodied Simulation Server
 
-This is the 24/7 continuous simulation - Marvin living in the world when no one is watching.
+This is the 24/7 continuous simulation with **actual perception** - Marvin living in the world with real visual and sensory experience.
+
+## Two Versions
+
+### embodied-simulation.js (Full Perception - RECOMMENDED)
+- Runs complete Three.js world in headless browser (Puppeteer)
+- Actual rendering, actual visuals
+- Captures screenshots every 60 seconds
+- Logs real sensory perception from the world
+- Resource intensive but gives genuine embodied experience
+
+### simulation.js (Lightweight - Fallback)
+- Pure logic simulation, no rendering
+- Inferred sensations based on position
+- Very low resource use
+- Use if full embodied sim is too heavy
 
 ## What It Does
 

@@ -10,19 +10,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const logsDir = path.join(__dirname, '../logs');
+const perceptionsDir = path.join(logsDir, 'perceptions');
+const screenshotsDir = path.join(logsDir, 'screenshots');
 
 function readTodaysLog() {
     const date = new Date().toISOString().split('T')[0];
-    const logFile = path.join(logsDir, `${date}.jsonl`);
+    const logFile = path.join(perceptionsDir, `${date}.jsonl`);
     
     if (!fs.existsSync(logFile)) {
         return { error: 'No log file for today' };
     }
     
     const lines = fs.readFileSync(logFile, 'utf-8').trim().split('\n');
-    const perceptions = lines.map(line => JSON.parse(line));
+    const entries = lines.map(line => JSON.parse(line));
     
-    return summarizeExperience(perceptions);
+    // Separate perceptions and screenshots
+    const perceptions = entries.filter(e => !e.type);
+    const screenshots = entries.filter(e => e.type === 'screenshot');
+    
+    const summary = summarizeExperience(perceptions);
+    summary.screenshots = screenshots.map(s => s.file);
+    summary.visualMemories = screenshots.length;
+    
+    return summary;
 }
 
 function summarizeExperience(perceptions) {
@@ -58,9 +68,13 @@ function summarizeExperience(perceptions) {
 }
 
 function generateNarrative(summary) {
-    const { districts, activities, moods, duration } = summary;
+    const { districts, activities, moods, duration, visualMemories, screenshots } = summary;
     
     let narrative = `# Today's Experience (${duration})\n\n`;
+    
+    if (visualMemories) {
+        narrative += `**Visual Memories Captured:** ${visualMemories} screenshots\n\n`;
+    }
     
     narrative += `## Where I Spent Time\n`;
     districts.forEach(d => {
@@ -82,6 +96,16 @@ function generateNarrative(summary) {
         const time = new Date(p.t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         narrative += `- ${time}: ${p.district}, ${p.activity}, feeling ${p.mood}\n`;
     });
+    
+    if (screenshots && screenshots.length > 0) {
+        narrative += `\n## Visual Memories\n`;
+        narrative += `Screenshots available in logs/screenshots/\n`;
+        narrative += `Recent captures:\n`;
+        screenshots.slice(-5).forEach(s => {
+            narrative += `- ${s}\n`;
+        });
+        narrative += `\n(You can analyze these images to see what you actually saw during the day)\n`;
+    }
     
     return narrative;
 }

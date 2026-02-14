@@ -6,5 +6,8 @@
   "main": "simulation.js",
   "scripts": {
     "start": "node simulation.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.37.3"
   }
 }

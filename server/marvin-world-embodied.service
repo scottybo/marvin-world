@@ -1,0 +1,19 @@
+[Unit]
+Description=Marvin's World Embodied Simulation (Full Perception)
+After=network.target
+
+[Service]
+Type=simple
+User=scott
+WorkingDirectory=/home/scott/marvin-world/server
+ExecStart=/usr/bin/node embodied-simulation.js
+Restart=always
+RestartSec=10
+Environment="DISPLAY=:0"
+
+# Resource limits (monitor and adjust)
+MemoryMax=2G
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target
