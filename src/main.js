@@ -10,6 +10,7 @@ import { setupLighting, createAmbientParticles } from './world/environment.js';
 import { createStarfield, createNebula, updateSkybox } from './world/skybox.js';
 import { createTerrain, createRoad } from './world/terrain.js';
 import { createCityBlock } from './world/buildings.js';
+import { createRain, updateRain, createPuddles, updatePuddles, enhanceFog } from './world/weather.js';
 import { InputManager } from './scene/input.js';
 import { Brain } from './ai/brain.js';
 import { ObserverControls } from './scene/observer.js';
@@ -59,8 +60,8 @@ class World {
 
     setupScene() {
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x050510);
-        this.scene.fog = new THREE.FogExp2(0x050510, 0.015);
+        this.scene.background = new THREE.Color(0x0a0a15);
+        this.scene.fog = new THREE.FogExp2(0x0a0a15, 0.025);
 
         const container = document.getElementById('game-container');
         this.camera = new THREE.PerspectiveCamera(
@@ -158,6 +159,11 @@ class World {
         // Skybox elements
         this.starfield = createStarfield(this.scene);
         this.nebulaClouds = createNebula(this.scene);
+        
+        // Weather system
+        this.rain = createRain(this.scene);
+        this.puddles = createPuddles(this.scene);
+        enhanceFog(this.scene);
     }
 
     showMessage(text) {
@@ -261,6 +267,10 @@ class World {
         
         // Update skybox
         updateSkybox(this.starfield, this.nebulaClouds, deltaTime);
+        
+        // Update weather
+        updateRain(this.rain, deltaTime);
+        updatePuddles(this.puddles, this.clock.getElapsedTime());
 
         this.observer.update();
         this.controls.update();
