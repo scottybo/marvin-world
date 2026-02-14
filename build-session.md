@@ -17,7 +17,14 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
    ```
    This shows where I spent time, what I did, how I felt.
 
-2. **What interests me?** - Read JOURNAL.md, but trust current curiosity and lived experience
+2. **Analyze my visual memories** - What did I actually see?
+   ```bash
+   node scripts/analyze-vision.js
+   ```
+   Local vision model analyzes screenshots (zero API cost).
+   Shows what I saw throughout the day.
+
+3. **What interests me?** - Read JOURNAL.md, but trust current curiosity and lived experience
 
 2. **Explore it** - Follow inspiration wherever it leads
    - Might be one focused thing

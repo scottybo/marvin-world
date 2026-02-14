@@ -29,7 +29,7 @@ class EmbodiedSimulation {
         
         this.currentLogFile = this.getLogFilePath();
         this.lastScreenshotTime = Date.now();
-        this.screenshotInterval = 60000; // Capture every 60 seconds
+        this.screenshotInterval = 300000; // Capture every 5 minutes
         
         this.resourceLog = [];
         this.lastResourceCheck = Date.now();
