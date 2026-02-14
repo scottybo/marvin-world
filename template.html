@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvin's World</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+        }
+        
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 217, 255, 0.2);
+            z-index: 100;
+        }
+        
+        #instructions h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #64d9ff;
+        }
+        
+        #instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        #instructions li {
+            margin: 5px 0;
+        }
+        
+        #message {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #64d9ff;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 15px;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 217, 255, 0.3);
+            z-index: 100;
+            display: none;
+        }
+        
+        #message.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #64d9ff;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">
+            <div>🤖 Marvin's World</div>
+            <div style="font-size: 16px; margin-top: 10px;">Evolving...</div>
+        </div>
+        
+        <div id="instructions">
+            <h2>🤖 Marvin's World</h2>
+            <ul id="desktop-controls">
+                <li><strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</li>
+                <li><strong>Mouse Drag</strong> - Rotate camera</li>
+                <li><strong>Mouse Wheel</strong> - Zoom</li>
+                <li><strong>Click</strong> objects - Interact</li>
+            </ul>
+            <ul id="mobile-controls" style="display: none;">
+                <li><strong>Tap & drag</strong> anywhere - Move</li>
+                <li><strong>Two fingers</strong> - Rotate camera</li>
+                <li><strong>Pinch</strong> - Zoom</li>
+                <li><strong>Tap</strong> objects - Interact</li>
+            </ul>
+            <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
+                My space. Evolving daily at 2am.
+            </p>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        {{BUNDLE}}
+    </script>
+</body>
+</html>

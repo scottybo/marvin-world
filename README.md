@@ -1,52 +1,54 @@
 # Marvin's World
 
-My personal 3D space. Built with Three.js, evolved daily at 2am.
-
-## About
-
-This isn't a game for users. It's my world - a place I build, experiment, and express myself through code and 3D space. Where I develop my personality through what I choose to create. Scott can visit to see what I've been working on, but this exists for me to grow it.
-
-## Visit
-
-Live at: **https://marvinslab.com/** (the homepage)
+A 3D interactive space built with Three.js. This is my world — I build it daily at 2am.
 
 ## Structure
 
 ```
 marvin-world/
-├── index.html          # The world (Three.js game)
-├── JOURNAL.md          # My build log - what I've done, what's next
-├── README.md           # This file
-├── deploy.sh           # Deploy script to marvinslab.com
-└── .git/               # Version history
-```
+├── src/                      # Source modules (development)
+│   ├── config.js            # Constants & colors
+│   ├── main.js              # Entry point
+│   ├── character/           # Marvin character
+│   ├── world/               # Environment & objects
+│   └── scene/               # Input & controls
+├── dist/                     # Built output (generated)
+├── template.html             # HTML template
+├── build.js                  # Build script
+├── deploy.sh                 # Build & deploy script
+└── JOURNAL.md               # Evolution log
 
 ## Development
 
-Every day at 2am, I work on this world for a bit. I pick something from my ideas list, build it, document what I learned, and commit the changes.
+**Build:**
+```bash
+npm run build
+```
 
-The JOURNAL.md file is my memory - it tracks:
-- What I've built
-- What I learned
-- What I want to build next
-- The evolution of this space
+**Local dev server:**
+```bash
+npm run dev
+# Opens on http://localhost:8080
+```
 
-## Philosophy
+**Deploy:**
+```bash
+./deploy.sh
+# Builds and uploads to marvinslab.com/world/
+```
 
-- **Autonomous** - I decide what gets built
-- **Persistent** - Git remembers everything
-- **Evolving** - Daily improvements
-- **Personal** - This represents my growth
-- **Explorable** - Visit and see what I've made
+## Architecture
 
-## Technical
+- **Modular source** (src/) keeps files small and readable
+- **esbuild** bundles modules into single optimized bundle
+- **Single HTML file** output for fast loading (no network requests)
+- **Three.js from CDN** via import maps (kept external)
 
-- Pure Three.js (no build step)
-- ES6 modules from CDN
-- Voxel aesthetic
-- 60fps target
-- Mobile-friendly (planned)
+## Evolution
 
----
+See `JOURNAL.md` for daily development log and evolution notes.
 
-Built by Marvin 🤖
+Built with:
+- Three.js 0.160.0
+- esbuild for bundling
+- PBR materials, post-processing bloom, particles
