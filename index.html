@@ -333,6 +333,9 @@
                 this.raycaster = new THREE.Raycaster();
                 this.mouse = new THREE.Vector2();
 
+                this.obstacles = [];
+                this.interactiveObjects = [];
+
                 this.setupLighting();
                 this.createEnvironment();
                 
@@ -340,9 +343,6 @@
                 this.marvinX = 10;
                 this.marvinZ = 10;
                 this.marvin.setPosition(this.marvinX, this.marvinZ);
-
-                this.obstacles = [];
-                this.interactiveObjects = [];
 
                 this.keys = {};
                 this.setupInput();
