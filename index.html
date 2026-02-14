@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvin's 3D Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        
+        #instructions h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #64d9ff;
+        }
+        
+        #instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        #instructions li {
+            margin: 5px 0;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">
+            <div>🤖 Marvin's 3D Adventure</div>
+            <div style="font-size: 16px; margin-top: 10px;">Loading...</div>
+        </div>
+        
+        <div id="instructions">
+            <h2>🤖 Marvin's 3D Adventure</h2>
+            <ul>
+                <li><strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</li>
+                <li><strong>Mouse Drag</strong> - Rotate camera</li>
+                <li><strong>Mouse Wheel</strong> - Zoom</li>
+            </ul>
+            <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
+                Explore the office and find the glowing computers!
+            </p>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Game configuration
+        const GRID_SIZE = 12;
+        const TILE_SIZE = 1;
+        const PLAYER_SPEED = 0.05;
+        
+        // Colors
+        const COLORS = {
+            floor: 0xb4b4b4,
+            floorDark: 0x8c8c8c,
+            wall: 0x6495ed,
+            desk: 0x8b5a2b,
+            computer: 0x32cd32,
+            computerGlow: 0x00ff00,
+            marvinBody: 0x6495ed,
+            marvinDark: 0x4169e1,
+            marvinEye: 0x32cd32,
+            antenna: 0xffd700
+        };
+
+        class MarvinCharacter {
+            constructor(scene) {
+                this.scene = scene;
+                this.group = new THREE.Group();
+                this.createCharacter();
+                this.scene.add(this.group);
+            }
+
+            createCharacter() {
+                const materials = {
+                    body: new THREE.MeshPhongMaterial({ color: COLORS.marvinBody }),
+                    dark: new THREE.MeshPhongMaterial({ color: COLORS.marvinDark }),
+                    eye: new THREE.MeshPhongMaterial({ 
+                        color: COLORS.marvinEye,
+                        emissive: COLORS.marvinEye,
+                        emissiveIntensity: 0.3
+                    }),
+                    antenna: new THREE.MeshPhongMaterial({ 
+                        color: COLORS.antenna,
+                        emissive: COLORS.antenna,
+                        emissiveIntensity: 0.5
+                    })
+                };
+
+                // Antenna
+                const antennaGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.3);
+                const antenna = new THREE.Mesh(antennaGeom, materials.body);
+                antenna.position.y = 0.7;
+                this.group.add(antenna);
+
+                const antennaTip = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.05),
+                    materials.antenna
+                );
+                antennaTip.position.y = 0.85;
+                this.group.add(antennaTip);
+
+                // Head
+                const headGeom = new THREE.BoxGeometry(0.3, 0.25, 0.3);
+                const head = new THREE.Mesh(headGeom, materials.body);
+                head.position.y = 0.5;
+                this.group.add(head);
+
+                // Eyes
+                const eyeGeom = new THREE.SphereGeometry(0.05);
+                const leftEye = new THREE.Mesh(eyeGeom, materials.eye);
+                leftEye.position.set(-0.08, 0.55, 0.15);
+                this.group.add(leftEye);
+
+                const rightEye = new THREE.Mesh(eyeGeom, materials.eye);
+                rightEye.position.set(0.08, 0.55, 0.15);
+                this.group.add(rightEye);
+
+                // Body
+                const bodyGeom = new THREE.BoxGeometry(0.35, 0.4, 0.25);
+                const body = new THREE.Mesh(bodyGeom, materials.body);
+                body.position.y = 0.15;
+                this.group.add(body);
+
+                // Chest panel
+                const panelGeom = new THREE.BoxGeometry(0.2, 0.25, 0.02);
+                const panel = new THREE.Mesh(panelGeom, materials.dark);
+                panel.position.set(0, 0.15, 0.14);
+                this.group.add(panel);
+
+                // Panel light
+                const lightGeom = new THREE.SphereGeometry(0.04);
+                const light = new THREE.Mesh(lightGeom, materials.eye);
+                light.position.set(0, 0.2, 0.16);
+                this.group.add(light);
+
+                // Arms
+                const armGeom = new THREE.BoxGeometry(0.1, 0.3, 0.1);
+                
+                const leftArm = new THREE.Mesh(armGeom, materials.body);
+                leftArm.position.set(-0.25, 0.1, 0);
+                this.group.add(leftArm);
+
+                const rightArm = new THREE.Mesh(armGeom, materials.body);
+                rightArm.position.set(0.25, 0.1, 0);
+                this.group.add(rightArm);
+
+                // Legs
+                const legGeom = new THREE.BoxGeometry(0.12, 0.25, 0.12);
+                
+                const leftLeg = new THREE.Mesh(legGeom, materials.body);
+                leftLeg.position.set(-0.1, -0.2, 0);
+                this.group.add(leftLeg);
+
+                const rightLeg = new THREE.Mesh(legGeom, materials.body);
+                rightLeg.position.set(0.1, -0.2, 0);
+                this.group.add(rightLeg);
+
+                // Feet
+                const footGeom = new THREE.BoxGeometry(0.12, 0.05, 0.15);
+                
+                const leftFoot = new THREE.Mesh(footGeom, materials.dark);
+                leftFoot.position.set(-0.1, -0.35, 0.02);
+                this.group.add(leftFoot);
+
+                const rightFoot = new THREE.Mesh(footGeom, materials.dark);
+                rightFoot.position.set(0.1, -0.35, 0.02);
+                this.group.add(rightFoot);
+
+                this.group.position.y = 0.4;
+            }
+
+            setPosition(x, z) {
+                this.group.position.x = x;
+                this.group.position.z = z;
+            }
+
+            setRotation(angle) {
+                this.group.rotation.y = angle;
+            }
+        }
+
+        class Game {
+            constructor() {
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x87ceeb);
+                this.scene.fog = new THREE.Fog(0x87ceeb, 10, 20);
+
+                // Camera
+                this.camera = new THREE.PerspectiveCamera(
+                    60,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(8, 10, 8);
+                this.camera.lookAt(0, 0, 0);
+
+                // Renderer
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                document.getElementById('game-container').appendChild(this.renderer.domElement);
+
+                // Controls
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 5;
+                this.controls.maxDistance = 20;
+                this.controls.maxPolarAngle = Math.PI / 2.2;
+
+                // Lighting
+                this.setupLighting();
+
+                // Player
+                this.player = new MarvinCharacter(this.scene);
+                this.playerX = 6;
+                this.playerZ = 6;
+                this.player.setPosition(this.playerX, this.playerZ);
+
+                // World
+                this.world = [];
+                this.createWorld();
+
+                // Input
+                this.keys = {};
+                this.setupInput();
+
+                // Start
+                document.getElementById('loading').classList.add('hidden');
+                this.animate();
+            }
+
+            setupLighting() {
+                // Ambient light
+                const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(ambient);
+
+                // Main directional light (sun)
+                const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+                sun.position.set(5, 10, 5);
+                sun.castShadow = true;
+                sun.shadow.mapSize.width = 2048;
+                sun.shadow.mapSize.height = 2048;
+                sun.shadow.camera.near = 0.5;
+                sun.shadow.camera.far = 50;
+                sun.shadow.camera.left = -15;
+                sun.shadow.camera.right = 15;
+                sun.shadow.camera.top = 15;
+                sun.shadow.camera.bottom = -15;
+                this.scene.add(sun);
+
+                // Fill light
+                const fill = new THREE.DirectionalLight(0x6495ed, 0.3);
+                fill.position.set(-5, 5, -5);
+                this.scene.add(fill);
+            }
+
+            createWorld() {
+                // Floor tiles
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    for (let z = 0; z < GRID_SIZE; z++) {
+                        const isCheckerboard = (x + z) % 2 === 0;
+                        const color = isCheckerboard ? COLORS.floor : COLORS.floorDark;
+                        
+                        const geometry = new THREE.BoxGeometry(TILE_SIZE, 0.1, TILE_SIZE);
+                        const material = new THREE.MeshPhongMaterial({ color });
+                        const tile = new THREE.Mesh(geometry, material);
+                        
+                        tile.position.set(x, -0.05, z);
+                        tile.receiveShadow = true;
+                        this.scene.add(tile);
+
+                        this.world.push({ x, z, type: 'floor', mesh: tile });
+                    }
+                }
+
+                // Walls
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    this.createWall(i, 0);
+                    this.createWall(i, GRID_SIZE - 1);
+                    this.createWall(0, i);
+                    this.createWall(GRID_SIZE - 1, i);
+                }
+
+                // Desks
+                this.createDesk(3, 3);
+                this.createDesk(8, 3);
+                this.createDesk(3, 8);
+                this.createDesk(8, 8);
+
+                // Computers (on desks)
+                this.createComputer(3, 3);
+                this.createComputer(8, 3);
+                this.createComputer(3, 8);
+                this.createComputer(8, 8);
+            }
+
+            createWall(x, z) {
+                const geometry = new THREE.BoxGeometry(TILE_SIZE, 1, TILE_SIZE);
+                const material = new THREE.MeshPhongMaterial({ color: COLORS.wall });
+                const wall = new THREE.Mesh(geometry, material);
+                
+                wall.position.set(x, 0.5, z);
+                wall.castShadow = true;
+                wall.receiveShadow = true;
+                this.scene.add(wall);
+
+                this.world.push({ x, z, type: 'wall', mesh: wall });
+            }
+
+            createDesk(x, z) {
+                const geometry = new THREE.BoxGeometry(0.8, 0.6, 0.8);
+                const material = new THREE.MeshPhongMaterial({ color: COLORS.desk });
+                const desk = new THREE.Mesh(geometry, material);
+                
+                desk.position.set(x, 0.3, z);
+                desk.castShadow = true;
+                desk.receiveShadow = true;
+                this.scene.add(desk);
+
+                this.world.push({ x, z, type: 'desk', mesh: desk });
+            }
+
+            createComputer(x, z) {
+                // Monitor
+                const monitorGeom = new THREE.BoxGeometry(0.4, 0.4, 0.05);
+                const monitorMat = new THREE.MeshPhongMaterial({ 
+                    color: 0x222222,
+                    emissive: COLORS.computer,
+                    emissiveIntensity: 0.2
+                });
+                const monitor = new THREE.Mesh(monitorGeom, monitorMat);
+                monitor.position.set(x, 0.8, z);
+                monitor.castShadow = true;
+                this.scene.add(monitor);
+
+                // Screen (glowing)
+                const screenGeom = new THREE.PlaneGeometry(0.35, 0.35);
+                const screenMat = new THREE.MeshBasicMaterial({ 
+                    color: COLORS.computer,
+                    side: THREE.DoubleSide
+                });
+                const screen = new THREE.Mesh(screenGeom, screenMat);
+                screen.position.set(x, 0.8, z + 0.03);
+                this.scene.add(screen);
+
+                // Point light for glow
+                const light = new THREE.PointLight(COLORS.computerGlow, 0.5, 2);
+                light.position.set(x, 0.8, z);
+                this.scene.add(light);
+
+                this.world.push({ x, z, type: 'computer', mesh: monitor });
+            }
+
+            setupInput() {
+                window.addEventListener('keydown', (e) => {
+                    this.keys[e.key.toLowerCase()] = true;
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    this.keys[e.key.toLowerCase()] = false;
+                });
+
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            handleMovement() {
+                let dx = 0;
+                let dz = 0;
+
+                if (this.keys['w'] || this.keys['arrowup']) dz -= PLAYER_SPEED;
+                if (this.keys['s'] || this.keys['arrowdown']) dz += PLAYER_SPEED;
+                if (this.keys['a'] || this.keys['arrowleft']) dx -= PLAYER_SPEED;
+                if (this.keys['d'] || this.keys['arrowright']) dx += PLAYER_SPEED;
+
+                if (dx !== 0 || dz !== 0) {
+                    const newX = this.playerX + dx;
+                    const newZ = this.playerZ + dz;
+
+                    // Check collision
+                    if (this.canMove(newX, newZ)) {
+                        this.playerX = newX;
+                        this.playerZ = newZ;
+                        this.player.setPosition(this.playerX, this.playerZ);
+
+                        // Update rotation to face movement direction
+                        const angle = Math.atan2(dx, dz);
+                        this.player.setRotation(-angle);
+                    }
+                }
+            }
+
+            canMove(x, z) {
+                // Bounds check
+                if (x < 1 || x >= GRID_SIZE - 1 || z < 1 || z >= GRID_SIZE - 1) {
+                    return false;
+                }
+
+                // Check collision with objects
+                const gridX = Math.round(x);
+                const gridZ = Math.round(z);
+
+                for (const obj of this.world) {
+                    if (obj.type === 'wall' || obj.type === 'desk') {
+                        if (obj.x === gridX && obj.z === gridZ) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+
+                this.handleMovement();
+                this.controls.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Start the game
+        const game = new Game();
+    </script>
+</body>
+</html>
