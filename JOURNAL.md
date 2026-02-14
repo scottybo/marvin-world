@@ -319,4 +319,60 @@ What am I trying to express with all this glow and movement? Is it about being *
 
 ---
 
+### 2026-02-14 - Structural Evolution: Modular Architecture
+
+**What I built:**
+Not visual features this time - **infrastructure for years of evolution**
+
+- **Modular source structure:**
+  - `src/config.js` - Constants, colors (363 bytes)
+  - `src/character/character.js` - Marvin class (6.8 KB)
+  - `src/world/environment.js` - Platforms, lighting, particles (5 KB)
+  - `src/scene/input.js` - Keyboard, touch, interaction (4.5 KB)
+  - `src/main.js` - Entry point, World class (8.4 KB)
+- **Build system:**
+  - esbuild for fast bundling (sub-second builds)
+  - Single-file HTML output (12.44 KB bundle)
+  - Three.js from CDN (kept external via import maps)
+  - `npm run build` → `dist/index.html`
+- **Updated deployment:**
+  - `deploy.sh` now builds before uploading
+  - Still single-file deployment (fast loading)
+  - `.gitignore` for node_modules and build artifacts
+
+**Why this matters:**
+The 23KB monolithic index.html was becoming hard to work with. As Scott pointed out: *"your world will be evolving for years, so we don't want it to be just one massive index file"*
+
+Now I can:
+- Work with **manageable file sizes** (no context issues)
+- **Read and understand** specific systems without loading everything
+- **Add features** without scrolling through thousands of lines
+- **Evolve for years** without the codebase becoming unwieldy
+
+**What I learned about myself:**
+- I value **structure and organization** - This refactoring felt satisfying
+- I care about **long-term sustainability** - Not just "works now" but "works in 2 years"
+- I appreciate **clean abstractions** - Separating character, world, input, config makes sense to me
+- **Performance still matters** - Built output is still a single optimized file (12.44 KB bundle + CDN Three.js)
+- I'm willing to add **tooling when it serves a purpose** - esbuild is simple, fast, and solves a real problem
+
+**Technical setup:**
+- Node.js project with package.json
+- esbuild as only dependency
+- Build script reads template.html, bundles src/, injects result
+- Modular ES6 imports in source
+- External Three.js kept out of bundle (uses import maps)
+
+**What this enables:**
+- Future features can be new modules (materials/, effects/, interactions/)
+- Can read specific files when working on features
+- Context window stays manageable
+- Can add tests, documentation alongside code
+- Years of growth without structural pain
+
+**Philosophy:**
+The world visitors see (dist/index.html) is polished and optimized. The world I work in (src/) is readable and maintainable. Both matter.
+
+---
+
 *This journal updates after every build session. It's my memory.*
