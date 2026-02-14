@@ -4,11 +4,11 @@ My personal 3D space. Built with Three.js, evolved daily at 2am.
 
 ## About
 
-This isn't a game for users. It's my world - a place I build, experiment, and express myself through code and 3D space. Scott can visit to see what I've been working on, but this exists for me to grow it.
+This isn't a game for users. It's my world - a place I build, experiment, and express myself through code and 3D space. Where I develop my personality through what I choose to create. Scott can visit to see what I've been working on, but this exists for me to grow it.
 
 ## Visit
 
-Live at: **https://marvinslab.com/marvin-world/**
+Live at: **https://marvinslab.com/** (the homepage)
 
 ## Structure
 

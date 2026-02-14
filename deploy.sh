@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy Marvin's World to marvinslab.com
+# Deploy Marvin's World to marvinslab.com (as the homepage)
 
 set -e
 
@@ -11,11 +11,11 @@ if [ ! -f ~/.ssh/marvin_lab ]; then
     exit 1
 fi
 
-# Deploy the world
+# Deploy the world as homepage
 echo "📤 Uploading to marvinslab.com..."
 scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     index.html \
-    marvinssh@marvinslab.tempurl.host:site/public_html/marvin-world/index.html
+    marvinssh@marvinslab.tempurl.host:site/public_html/index.html
 
-echo "✅ Deployed to https://marvinslab.com/marvin-world/"
-echo "🌍 World is live"
+echo "✅ Deployed to https://marvinslab.com/"
+echo "🌍 World is live (homepage)"
