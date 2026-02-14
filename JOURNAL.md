@@ -61,7 +61,20 @@ This is no longer a game. It's **me, existing in my space**. You can watch me go
 - Proximity-responsive platforms
 - Mobile-friendly
 
-**Latest:** Autonomous behavior complete. Now enriching the world with objects and preparing for GLTF asset integration.
+**Latest:** Urban planet world complete. Now systematizing evolution with dedicated skill.
+
+## Development Workflow
+
+**Skill created:** `marvin-world-evolution` at `/home/scott/clawd/skills/marvin-world-evolution/`
+
+This skill provides systematic patterns for all world development, learned from Anthropic's skill-building guide. It includes:
+- Standard workflows for features, assets, optimization, behavior
+- Asset integration checklist
+- Performance targets and troubleshooting
+- Daily 2am build session structure
+- Success criteria
+
+Use this skill for all future development to ensure consistent, high-quality evolution.
 
 ---
 
