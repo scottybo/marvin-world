@@ -24,9 +24,12 @@ export function updateHUD(brain) {
     }
     
     const thought = brain.getCurrentThought();
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const hint = isMobile ? 'Camera follows me' : 'Press F to toggle follow mode';
+    
     hud.innerHTML = `
         <div style="font-weight: bold; margin-bottom: 5px;">🤖 Marvin</div>
         <div style="opacity: 0.8;">${thought}</div>
-        <div style="font-size: 11px; opacity: 0.6; margin-top: 8px;">Press F to toggle follow mode</div>
+        <div style="font-size: 11px; opacity: 0.6; margin-top: 8px;">${hint}</div>
     `;
 }

@@ -154,10 +154,10 @@ class World {
         }, 4000);
     }
 
-    handleMovement() {
+    handleMovement(deltaTime) {
         // Get autonomous movement from brain
         const { dx, dz, moving } = this.brain.update(
-            this.clock.getDelta(),
+            deltaTime,
             this.marvinX,
             this.marvinZ
         );
@@ -229,7 +229,7 @@ class World {
         const deltaTime = this.clock.getDelta();
         
         // Marvin moves autonomously
-        const isMoving = this.handleMovement();
+        const isMoving = this.handleMovement(deltaTime);
         
         this.marvin.update(deltaTime, isMoving);
         this.updateProximityEffects();

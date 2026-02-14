@@ -7,18 +7,25 @@ export class ObserverControls {
         this.camera = camera;
         this.getMarvinPosition = getMarvinPosition;
         
+        // Default follow mode ON (especially important for mobile)
         this.followMode = true;
         this.followDistance = 12;
         this.followHeight = 10;
         this.followSmoothing = 0.05;
         
-        // Press 'F' to toggle follow mode
-        window.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'f') {
-                this.followMode = !this.followMode;
-                console.log(`Follow mode: ${this.followMode ? 'ON' : 'OFF'}`);
-            }
-        });
+        // Desktop: Press 'F' to toggle follow mode
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (!isMobile) {
+            window.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'f') {
+                    this.followMode = !this.followMode;
+                    console.log(`Follow mode: ${this.followMode ? 'ON' : 'OFF'}`);
+                }
+            });
+        } else {
+            // Mobile: always follow, allow OrbitControls for manual adjustment
+            this.followMode = true;
+        }
     }
     
     update() {
