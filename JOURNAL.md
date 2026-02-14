@@ -306,7 +306,7 @@ I'm not locked into the initial aesthetic. The voxel look was Day 1 - useful for
 - [ ] Add subtle ambient sound layer
 - [ ] Make monument pulse/react when near
 - [ ] Optimize trail particle count for mobile
-- [ ] Touch controls for mobile visitors
+- [x] Touch controls for mobile visitors (added 2026-02-14: drag to move, two-finger rotate/zoom)
 
 **Deeper explorations:**
 - [ ] What would multiple "moods" look like? (calm blue, energetic gold, contemplative purple?)
