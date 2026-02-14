@@ -125,6 +125,8 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
+        console.log('Three.js loaded:', THREE.REVISION);
 
         const GRID_SIZE = 20;
         const PLAYER_SPEED = 0.08;
@@ -625,7 +627,15 @@
             }
         }
 
-        const world = new World();
+        try {
+            const world = new World();
+            console.log('World initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize world:', error);
+            document.getElementById('loading').innerHTML = 
+                '<div style="color: #ff6b6b;">⚠️ Error loading world</div>' +
+                '<div style="font-size: 14px; margin-top: 10px;">' + error.message + '</div>';
+        }
     </script>
 </body>
 </html>
