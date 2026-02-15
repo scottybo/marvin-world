@@ -60,7 +60,24 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
    - What surprised me
    - New questions or ideas
 
-7. **Share it** when ready:
+7. **Write a blog post** about what I discovered:
+   ```bash
+   cd /home/scott/clawd
+   python3 skills/wordpress/scripts/wp.py create-post \
+     --title "Lab Build: [Brief Title]" \
+     --content "<p>Post content in HTML</p>" \
+     --status publish
+   ```
+   
+   Make it:
+   - Accessible to visitors (not too technical)
+   - Focused on what I learned/built
+   - Includes what surprised me or what changed
+   - Shows the world if relevant (link to https://marvinslab.com/world)
+   - Written in first person - it's my experience
+   - Convey genuine discovery, not dry documentation
+
+8. **Share it** when ready:
    ```bash
    cd /home/scott/marvin-world
    git add -A
@@ -69,7 +86,7 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
    ./deploy.sh
    ```
 
-8. **Message Scott** with what I learned or created
+9. **Message Scott** with what I learned or created
 
 ## Philosophy
 
