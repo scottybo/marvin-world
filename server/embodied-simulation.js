@@ -135,7 +135,7 @@ class EmbodiedSimulation {
         // Capture immediate screenshot (don't wait for interval timer)
         console.log('Capturing initial screenshot...');
         setTimeout(async () => {
-            await this.captureScreenshot();
+            await this.captureScreenshot(true); // Force immediate capture
         }, 2000); // Wait 2 seconds for first render
         
         // Start perception loop
