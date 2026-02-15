@@ -132,6 +132,12 @@ class EmbodiedSimulation {
         
         console.log('Position set, waiting for perceptions...');
         
+        // Capture immediate screenshot (don't wait for interval timer)
+        console.log('Capturing initial screenshot...');
+        setTimeout(async () => {
+            await this.captureScreenshot();
+        }, 2000); // Wait 2 seconds for first render
+        
         // Start perception loop
         this.startPerceptionLoop();
         
@@ -160,9 +166,9 @@ class EmbodiedSimulation {
         }
     }
     
-    async captureScreenshot() {
+    async captureScreenshot(force = false) {
         const now = Date.now();
-        if (now - this.lastScreenshotTime < this.screenshotInterval) return;
+        if (!force && now - this.lastScreenshotTime < this.screenshotInterval) return;
         
         try {
             // Switch to first-person POV for screenshot

@@ -8,7 +8,7 @@ Read JOURNAL.md to see what I've been exploring. But don't feel bound by it - fo
 
 The `marvin-world-evolution` skill provides technical guidance when needed, but the session is about discovery, not execution.
 
-**Screenshots:** A cron job runs at 1:50am to capture a fresh screenshot from Marvin's POV (embodied simulation runs for 5min, captures 1 screenshot, then stops and removes all old screenshots). Only the latest screenshot is kept for analysis at 2am.
+**Screenshots:** A cron job runs at 1:50am to capture a fresh screenshot from Marvin's POV (embodied simulation starts, captures 1 immediate screenshot, stops - takes ~15 seconds total, removes all old screenshots). Only the latest screenshot is kept for analysis at 2am.
 
 ## Approach
 
