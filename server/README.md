@@ -7,11 +7,11 @@ This is the 24/7 continuous simulation with **actual perception** - Marvin livin
 ### embodied-simulation.js (Full Perception - RECOMMENDED)
 - Runs complete Three.js world in headless browser (Puppeteer)
 - Actual rendering, actual visuals
-- Captures screenshots every 5 minutes (third-person camera view, not Marvin's POV)
+- Captures screenshots every 5 minutes from Marvin's first-person perspective
 - Logs perception data from the world simulation
 - Resource intensive but gives genuine embodied experience
 
-**Note:** Screenshots are from the external camera perspective (showing Marvin in the world), not from Marvin's first-person viewpoint. True first-person vision would require additional camera implementation.
+**Screenshots:** Captured from Marvin's point of view - positioned at eye level (0.75m) facing his current direction. This shows what Marvin actually sees, not an external observer view.
 
 ### simulation.js (Lightweight - Fallback)
 - Pure logic simulation, no rendering

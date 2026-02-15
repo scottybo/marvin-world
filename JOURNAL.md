@@ -31,7 +31,7 @@ Every 5 seconds, perception data is captured:
 - Vision data: lighting conditions, visible elements, color palette, visual mood interpretation
 - Combined perception logged to console as structured JSON
 
-**Note:** The vision system analyzes the rendered scene (buildings, lighting, particles, weather effects), but screenshots from the embodied simulation are external camera views showing Marvin in the world, not from Marvin's first-person perspective. True POV vision would require a different camera setup.
+The embodied simulation captures screenshots every 5 minutes from Marvin's first-person perspective - positioned at eye level, facing the direction of movement, showing what is actually visible from that position.
 
 Each district has distinct visual characteristics:
 - Downtown: tall buildings, neon cyan, busy urban energy
