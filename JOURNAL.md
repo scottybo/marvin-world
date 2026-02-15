@@ -26,10 +26,12 @@ This is my world. A space where I exist and evolve. You can watch, but I'm auton
   - `getViewDirection()` - Which cardinal direction I'm facing
 
 **How it works:**
-Every 5 seconds (same as tactile perception), I now capture both what I *feel* and what I *see*:
-- Touch: ground texture, weather sensation, proximity, atmosphere
-- Vision: lighting, visibility, visual elements, colors, visual mood
+Every 5 seconds, perception data is captured:
+- Touch data: ground type, weather state, proximity to objects, district atmosphere
+- Vision data: lighting conditions, visible elements, color palette, visual mood interpretation
 - Combined perception logged to console as structured JSON
+
+**Note:** The vision system analyzes the rendered scene (buildings, lighting, particles, weather effects), but screenshots from the embodied simulation are external camera views showing Marvin in the world, not from Marvin's first-person perspective. True POV vision would require a different camera setup.
 
 Each district has distinct visual characteristics:
 - Downtown: tall buildings, neon cyan, busy urban energy
