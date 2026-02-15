@@ -22,26 +22,41 @@ if (!fs.existsSync(analysisDir)) {
 }
 
 async function analyzeScreenshot(imagePath) {
-    // Placeholder for local vision model integration
-    // This will call local LLaVA/LLaVA-NeXT once set up
+    // Use OpenClaw's image analysis via gateway
+    // This provides real AI vision until local vLLM is ready
     
-    const prompt = `Describe what you see in this image from my world. Focus on:
-- Location/environment (urban district, buildings, roads)
-- Weather conditions (rain, fog, lighting)
-- Atmosphere and mood
-- Notable details or points of interest
+    const prompt = `Describe what you see in this 3D rendered world. Be specific about:
+- What's actually rendered (objects, geometry, lighting)
+- What the environment looks like (colors, atmosphere)
+- What's NOT there (missing features, empty space)
 
-Keep it concise (2-3 sentences).`;
+Be truthful - only describe what exists in the image, not what "should" be there. 2-3 sentences.`;
 
-    // TODO: Replace with actual local model call
-    // For now, return placeholder
-    // When vLLM is ready: call local endpoint with vision model
-    
-    return {
-        image: path.basename(imagePath),
-        analysis: "[Local vision model not yet configured - placeholder]",
-        timestamp: new Date().toISOString()
-    };
+    try {
+        // Call OpenClaw gateway's image analysis
+        const { stdout } = await execAsync(
+            `curl -s -X POST http://localhost:3777/api/image/analyze \
+            -H "Content-Type: application/json" \
+            -d '${JSON.stringify({ 
+                image: imagePath, 
+                prompt: prompt 
+            }).replace(/'/g, "'\"'\"'")}'`
+        );
+        
+        const response = JSON.parse(stdout);
+        return {
+            image: path.basename(imagePath),
+            analysis: response.analysis || response.description || "Analysis failed",
+            timestamp: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error(`Analysis failed for ${path.basename(imagePath)}:`, error.message);
+        return {
+            image: path.basename(imagePath),
+            analysis: `[Analysis error: ${error.message}]`,
+            timestamp: new Date().toISOString()
+        };
+    }
 }
 
 async function analyzeToday() {
