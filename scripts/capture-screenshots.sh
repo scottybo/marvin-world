@@ -3,7 +3,7 @@
 # Starts embodied simulation, waits for 1 screenshot (5min), then stops and cleans up old ones
 
 SCREENSHOT_DIR="/home/scott/marvin-world/logs/screenshots"
-KEEP_COUNT=10
+KEEP_COUNT=1
 
 echo "Starting embodied simulation for screenshot capture..."
 sudo systemctl start marvin-world-embodied
