@@ -291,9 +291,32 @@ class World {
 }
 
 // Initialize when DOM is ready
+let world;
 try {
-    const world = new World();
+    world = new World();
     console.log('Marvin\'s World initialized - revision:', THREE.REVISION);
+    
+    // Expose POV control for embodied simulation screenshots
+    window.switchToFirstPersonView = () => {
+        if (!world || !world.senses || !world.senses.firstPersonCamera) return false;
+        world._savedCamera = world.camera;
+        world._savedCameraPosition = world.camera.position.clone();
+        world._savedCameraRotation = world.camera.rotation.clone();
+        
+        // Switch composer to use first-person camera
+        world.composer.passes[0].camera = world.senses.firstPersonCamera;
+        return true;
+    };
+    
+    window.switchToThirdPersonView = () => {
+        if (!world || !world._savedCamera) return false;
+        
+        // Restore original camera
+        world.composer.passes[0].camera = world._savedCamera;
+        world._savedCamera = null;
+        return true;
+    };
+    
 } catch (error) {
     console.error('Failed to initialize world:', error);
     document.getElementById('loading').innerHTML = 

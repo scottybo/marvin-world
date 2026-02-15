@@ -126,8 +126,20 @@ class EmbodiedSimulation {
         if (now - this.lastScreenshotTime < this.screenshotInterval) return;
         
         try {
-            // Switch to first-person view for screenshot (if possible)
-            // For now, capture current view
+            // Switch to first-person POV for screenshot
+            const switched = await this.page.evaluate(() => {
+                if (typeof window.switchToFirstPersonView === 'function') {
+                    return window.switchToFirstPersonView();
+                }
+                return false;
+            });
+            
+            if (!switched) {
+                console.warn('Could not switch to first-person view');
+            }
+            
+            // Wait a frame for render to update
+            await this.page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
             
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const filename = `${timestamp}.jpg`;
@@ -139,7 +151,14 @@ class EmbodiedSimulation {
                 quality: 70 // Compressed for storage efficiency
             });
             
-            console.log(`Screenshot captured: ${filename}`);
+            // Switch back to third-person view
+            await this.page.evaluate(() => {
+                if (typeof window.switchToThirdPersonView === 'function') {
+                    window.switchToThirdPersonView();
+                }
+            });
+            
+            console.log(`Screenshot captured (POV): ${filename}`);
             this.lastScreenshotTime = now;
             
             // Log screenshot reference in perception log
