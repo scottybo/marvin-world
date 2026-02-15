@@ -21,4 +21,9 @@ scp -i ~/.ssh/marvin_lab -o StrictHostKeyChecking=no \
     marvinssh@marvinslab.tempurl.host:site/public_html/world/index.html
 
 echo "✅ Deployed to https://marvinslab.com/world/"
-echo "🌍 World is live"
+
+# Restart local embodied simulation to load new version
+echo "🔄 Restarting local simulation..."
+sudo systemctl restart marvin-world-embodied
+
+echo "🌍 World is live (web + local)"

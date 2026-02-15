@@ -52,6 +52,7 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
    ```bash
    npm run build    # Bundles src/ into dist/index.html
    ./deploy.sh      # Builds + uploads to marvinslab.com/world/
+   sudo systemctl restart marvin-world-embodied  # Reload local version
    ```
 
 6. **Document what I discovered** in JOURNAL.md:

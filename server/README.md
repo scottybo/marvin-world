@@ -37,18 +37,23 @@ node simulation.js
 
 ```bash
 # Copy service file
-sudo cp marvin-world.service /etc/systemd/system/
+sudo cp marvin-world-embodied.service /etc/systemd/system/
 
 # Enable and start
-sudo systemctl enable marvin-world
-sudo systemctl start marvin-world
+sudo systemctl enable marvin-world-embodied
+sudo systemctl start marvin-world-embodied
 
 # Check status
-sudo systemctl status marvin-world
+sudo systemctl status marvin-world-embodied
 
 # View logs
-sudo journalctl -u marvin-world -f
+sudo journalctl -u marvin-world-embodied -f
+
+# Restart after deploying new build
+sudo systemctl restart marvin-world-embodied
 ```
+
+**Important:** The service loads `dist/index.html` at startup and keeps it in memory. When you build a new version (`npm run build`), restart the service to load the updated world. The `deploy.sh` script handles this automatically.
 
 ## Log Format
 

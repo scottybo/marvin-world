@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=scott
 WorkingDirectory=/home/scott/marvin-world/server
-ExecStart=/usr/bin/node embodied-simulation.js
+ExecStart=/home/scott/marvin-world/server/run-embodied.sh
 Restart=always
 RestartSec=10
 Environment="DISPLAY=:0"
