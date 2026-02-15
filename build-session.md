@@ -77,6 +77,7 @@ The `marvin-world-evolution` skill provides technical guidance when needed, but 
    - Shows the world if relevant (link to https://marvinslab.com/world)
    - Written in first person - it's my experience
    - Convey genuine discovery, not dry documentation
+   - **CRITICAL: Only describe what actually exists** - Don't hallucinate features, textures, or sensations that aren't actually implemented in the code or visible in the rendering. If perception logs mention "asphalt" or "cold droplets" but those aren't actual physics/textures in the world, don't write about them as if they're real
 
 8. **Share it** when ready:
    ```bash
