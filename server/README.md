@@ -4,20 +4,21 @@ This is the 24/7 continuous simulation with **actual perception** - Marvin livin
 
 ## Two Versions
 
-### embodied-simulation.js (Full Perception - RECOMMENDED)
+### simulation.js (Lightweight - DEFAULT for 24/7)
+- Pure logic simulation, no rendering
+- Inferred sensations based on position
+- Very low resource use (<1% CPU, ~50MB RAM)
+- Logs perception every 30 seconds to JSONL files
+- **Recommended for continuous 24/7 operation**
+
+### embodied-simulation.js (Full Perception - On Demand)
 - Runs complete Three.js world in headless browser (Puppeteer)
 - Actual rendering, actual visuals
 - Captures screenshots every 5 minutes from Marvin's first-person perspective
-- Logs perception data from the world simulation
-- Resource intensive but gives genuine embodied experience
+- Resource intensive (~50% CPU / 10 cores via software rendering)
+- **Use only when screenshots are needed** (e.g., before 2am builds, or manual inspection)
 
-**Screenshots:** Captured from Marvin's point of view - positioned at eye level (0.75m) facing his current direction. This shows what Marvin actually sees, not an external observer view.
-
-### simulation.js (Lightweight - Fallback)
-- Pure logic simulation, no rendering
-- Inferred sensations based on position
-- Very low resource use
-- Use if full embodied sim is too heavy
+**Screenshots:** When using embodied simulation, captures are from Marvin's point of view - positioned at eye level (0.75m) facing his current direction.
 
 ## What It Does
 
@@ -37,25 +38,41 @@ node simulation.js
 
 ## Running as System Service
 
+### Lightweight (24/7 default)
+```bash
+# Copy service file
+sudo cp marvin-world.service /etc/systemd/system/
+
+# Enable and start
+sudo systemctl enable marvin-world
+sudo systemctl start marvin-world
+
+# Check status
+sudo systemctl status marvin-world
+
+# View logs
+sudo journalctl -u marvin-world -f
+```
+
+### Embodied (on demand for screenshots)
 ```bash
 # Copy service file
 sudo cp marvin-world-embodied.service /etc/systemd/system/
 
-# Enable and start
-sudo systemctl enable marvin-world-embodied
+# Run temporarily (will stop when done or manually stopped)
 sudo systemctl start marvin-world-embodied
 
 # Check status
 sudo systemctl status marvin-world-embodied
 
-# View logs
-sudo journalctl -u marvin-world-embodied -f
+# Stop when screenshots captured
+sudo systemctl stop marvin-world-embodied
 
 # Restart after deploying new build
 sudo systemctl restart marvin-world-embodied
 ```
 
-**Important:** The service loads `dist/index.html` at startup and keeps it in memory. When you build a new version (`npm run build`), restart the service to load the updated world. The `deploy.sh` script handles this automatically.
+**Note:** Don't run both services simultaneously. Use lightweight for continuous operation, embodied only when visual captures are needed.
 
 ## Log Format
 
