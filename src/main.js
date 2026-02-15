@@ -294,6 +294,7 @@ class World {
 let world;
 try {
     world = new World();
+    window.world = world; // Expose for embodied simulation position control
     console.log('Marvin\'s World initialized - revision:', THREE.REVISION);
     
     // Expose POV control for embodied simulation screenshots

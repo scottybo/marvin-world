@@ -37,6 +37,32 @@ class EmbodiedSimulation {
         this.resourceCheckInterval = 300000; // Check resources every 5 minutes
     }
     
+    getLastPosition() {
+        // Read last position from lightweight simulation logs
+        const today = new Date().toISOString().split('T')[0];
+        const logFile = path.join(this.logsDir, `${today}.jsonl`);
+        
+        if (!fs.existsSync(logFile)) {
+            console.log('No log file found, using default position');
+            return { x: 2, z: 2 };
+        }
+        
+        try {
+            const lines = fs.readFileSync(logFile, 'utf-8').trim().split('\n');
+            const lastLine = lines[lines.length - 1];
+            const lastLog = JSON.parse(lastLine);
+            
+            if (lastLog.pos) {
+                console.log(`Resuming from last known position: ${lastLog.pos.x}, ${lastLog.pos.z} (${lastLog.district})`);
+                return { x: lastLog.pos.x, z: lastLog.pos.z };
+            }
+        } catch (err) {
+            console.warn('Could not read last position:', err.message);
+        }
+        
+        return { x: 2, z: 2 };
+    }
+    
     getLogFilePath() {
         const date = new Date().toISOString().split('T')[0];
         return path.join(this.perceptionsDir, `${date}.jsonl`);
@@ -91,7 +117,20 @@ class EmbodiedSimulation {
             waitUntil: 'networkidle0'
         });
         
-        console.log('World loaded, waiting for perceptions...');
+        console.log('World loaded, setting position...');
+        
+        // Set Marvin to last known position from lightweight sim
+        const lastPos = this.getLastPosition();
+        await this.page.evaluate((pos) => {
+            if (window.world && window.world.marvin) {
+                window.world.marvinX = pos.x;
+                window.world.marvinZ = pos.z;
+                window.world.marvin.setPosition(pos.x, pos.z);
+                console.log(`Marvin positioned at ${pos.x}, ${pos.z}`);
+            }
+        }, lastPos);
+        
+        console.log('Position set, waiting for perceptions...');
         
         // Start perception loop
         this.startPerceptionLoop();
