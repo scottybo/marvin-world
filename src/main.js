@@ -10,7 +10,7 @@ import { setupLighting, createAmbientParticles } from './world/environment.js';
 import { createStarfield, createNebula, updateSkybox } from './world/skybox.js';
 import { createTerrain, createRoad } from './world/terrain.js';
 import { createCityBlock } from './world/buildings.js';
-import { createRain, updateRain, createPuddles, updatePuddles, enhanceFog } from './world/weather.js';
+import { createRain, updateRain, createPuddles, updatePuddles, enhanceFog, createLightning, updateLightning, createRainImpacts, updateRainImpacts } from './world/weather.js';
 import { InputManager } from './scene/input.js';
 import { Brain } from './ai/brain.js';
 import { ObserverControls } from './scene/observer.js';
@@ -166,7 +166,9 @@ class World {
         
         // Weather system
         this.rain = createRain(this.scene);
+        this.rainImpacts = createRainImpacts(this.scene);
         this.puddles = createPuddles(this.scene);
+        this.lightning = createLightning(this.scene);
         enhanceFog(this.scene);
     }
 
@@ -274,7 +276,9 @@ class World {
         
         // Update weather
         updateRain(this.rain, deltaTime);
+        updateRainImpacts(this.rainImpacts, deltaTime);
         updatePuddles(this.puddles, this.clock.getElapsedTime());
+        updateLightning(this.lightning, this.clock.getElapsedTime());
         
         // Update sensory perception
         this.senses.updateFirstPersonCamera(this.marvinX, this.marvinZ);

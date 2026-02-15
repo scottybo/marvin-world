@@ -17,9 +17,10 @@ export class Marvin {
 
     createCharacter() {
         // Modern robot design - sleek and futuristic
+        // SCALED UP 3X to be more visible
         
         // Body - elongated capsule with metallic finish
-        const bodyGeom = new THREE.CapsuleGeometry(0.3, 0.8, 32, 64);
+        const bodyGeom = new THREE.CapsuleGeometry(0.9, 2.4, 32, 64);
         const bodyMat = new THREE.MeshStandardMaterial({ 
             color: 0xffffff,
             metalness: 0.95,
@@ -34,7 +35,7 @@ export class Marvin {
 
         // Chest panel - glowing hexagon
         const hexShape = new THREE.Shape();
-        const hexRadius = 0.15;
+        const hexRadius = 0.45; // 3x scale
         for (let i = 0; i < 6; i++) {
             const angle = (i / 6) * Math.PI * 2;
             const x = Math.cos(angle) * hexRadius;
@@ -53,18 +54,18 @@ export class Marvin {
             roughness: 0
         });
         const hexPanel = new THREE.Mesh(hexGeom, hexMat);
-        hexPanel.position.set(0, 0.1, 0.28);
+        hexPanel.position.set(0, 0.3, 0.84); // 3x scale
         hexPanel.rotation.y = Math.PI / 2;
         this.group.add(hexPanel);
         
         // Chest panel light
-        const panelLight = new THREE.PointLight(COLORS.accent, 1.5, 3);
-        panelLight.position.set(0, 0.1, 0.35);
+        const panelLight = new THREE.PointLight(COLORS.accent, 3, 9); // 3x scale
+        panelLight.position.set(0, 0.3, 1.05); // 3x scale
         this.group.add(panelLight);
         this.chestLight = panelLight;
 
         // Head - smooth sphere with metallic finish
-        const headGeom = new THREE.SphereGeometry(0.35, 64, 64);
+        const headGeom = new THREE.SphereGeometry(1.05, 64, 64); // 3x scale
         const headMat = new THREE.MeshStandardMaterial({ 
             color: 0xf0f0f0,
             metalness: 0.9,
@@ -74,12 +75,12 @@ export class Marvin {
             envMapIntensity: 2
         });
         const head = new THREE.Mesh(headGeom, headMat);
-        head.position.y = 0.75;
+        head.position.y = 2.25; // 3x scale
         head.castShadow = true;
         this.group.add(head);
         
         // Visor - dark glass strip across face
-        const visorGeom = new THREE.BoxGeometry(0.5, 0.12, 0.05);
+        const visorGeom = new THREE.BoxGeometry(1.5, 0.36, 0.15); // 3x scale
         const visorMat = new THREE.MeshStandardMaterial({
             color: 0x000000,
             metalness: 1,
@@ -90,11 +91,11 @@ export class Marvin {
             opacity: 0.9
         });
         const visor = new THREE.Mesh(visorGeom, visorMat);
-        visor.position.set(0, 0.75, 0.32);
+        visor.position.set(0, 2.25, 0.96); // 3x scale
         this.group.add(visor);
 
         // Eye lights behind visor (glowing effect)
-        const eyeGeom = new THREE.SphereGeometry(0.04, 16, 16);
+        const eyeGeom = new THREE.SphereGeometry(0.12, 16, 16); // 3x scale
         const eyeMat = new THREE.MeshStandardMaterial({ 
             color: COLORS.accent,
             emissive: COLORS.accent,
@@ -104,23 +105,23 @@ export class Marvin {
         });
         
         const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
-        leftEye.position.set(-0.1, 0.75, 0.3);
+        leftEye.position.set(-0.3, 2.25, 0.9); // 3x scale
         this.group.add(leftEye);
 
         const rightEye = new THREE.Mesh(eyeGeom, eyeMat);
-        rightEye.position.set(0.1, 0.75, 0.3);
+        rightEye.position.set(0.3, 2.25, 0.9); // 3x scale
         this.group.add(rightEye);
 
         // Eye lights
-        const eyeLight = new THREE.PointLight(COLORS.accent, 1.5, 2);
-        eyeLight.position.set(0, 0.75, 0.35);
+        const eyeLight = new THREE.PointLight(COLORS.accent, 3, 6); // 3x scale
+        eyeLight.position.set(0, 2.25, 1.05); // 3x scale
         this.group.add(eyeLight);
         this.eyeLight = eyeLight;
 
         // No antenna - cleaner modern look
         
         // Shoulders - small spheres
-        const shoulderGeom = new THREE.SphereGeometry(0.12, 16, 16);
+        const shoulderGeom = new THREE.SphereGeometry(0.36, 16, 16); // 3x scale
         const shoulderMat = new THREE.MeshStandardMaterial({
             color: 0xe0e0e0,
             metalness: 0.9,
@@ -128,36 +129,37 @@ export class Marvin {
         });
         
         const leftShoulder = new THREE.Mesh(shoulderGeom, shoulderMat);
-        leftShoulder.position.set(-0.35, 0.3, 0);
+        leftShoulder.position.set(-1.05, 0.9, 0); // 3x scale
         leftShoulder.castShadow = true;
         this.group.add(leftShoulder);
         
         const rightShoulder = new THREE.Mesh(shoulderGeom, shoulderMat);
-        rightShoulder.position.set(0.35, 0.3, 0);
+        rightShoulder.position.set(1.05, 0.9, 0); // 3x scale
         rightShoulder.castShadow = true;
         this.group.add(rightShoulder);
 
+        this.baseY = 1.5; // 3x scale
         this.group.position.y = this.baseY;
     }
 
     createAura() {
         // Particle aura around Marvin
-        const particleCount = 20;
+        const particleCount = 30; // More particles
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         
         for (let i = 0; i < particleCount * 3; i += 3) {
             const angle = (i / 3) * (Math.PI * 2 / particleCount);
-            positions[i] = Math.cos(angle) * 0.6;
-            positions[i + 1] = Math.random() * 1.5 - 0.5;
-            positions[i + 2] = Math.sin(angle) * 0.6;
+            positions[i] = Math.cos(angle) * 1.8; // 3x scale
+            positions[i + 1] = Math.random() * 4.5 - 1.5; // 3x scale
+            positions[i + 2] = Math.sin(angle) * 1.8; // 3x scale
         }
         
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         
         const material = new THREE.PointsMaterial({
             color: COLORS.accent,
-            size: 0.04,
+            size: 0.12, // 3x scale
             transparent: true,
             opacity: 0.6,
             blending: THREE.AdditiveBlending
@@ -168,7 +170,7 @@ export class Marvin {
     }
 
     spawnTrailParticle() {
-        const particleGeom = new THREE.SphereGeometry(0.08, 8, 8);
+        const particleGeom = new THREE.SphereGeometry(0.24, 8, 8); // 3x scale
         const particleMat = new THREE.MeshStandardMaterial({ 
             color: COLORS.accent,
             emissive: COLORS.accent,
@@ -180,7 +182,7 @@ export class Marvin {
         });
         const particle = new THREE.Mesh(particleGeom, particleMat);
         particle.position.copy(this.group.position);
-        particle.position.y += Math.random() * 0.3;
+        particle.position.y += Math.random() * 0.9; // 3x scale
         particle.userData = { life: 1.0, fadeSpeed: 0.8 };
         this.scene.add(particle);
         this.trailParticles.push(particle);
