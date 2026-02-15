@@ -7,6 +7,7 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,15 +47,17 @@ class EmbodiedSimulation {
         console.log('Launching browser with GPU acceleration...');
         
         // Launch browser with optimized settings
+        // Note: Run via xvfb-run to provide X11 display for WebGL
         this.browser = await puppeteer.launch({
-            headless: 'new',
+            executablePath: '/usr/bin/chromium-browser',
+            headless: false, // Need visible display for WebGL (provided by Xvfb)
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-gpu', // Actually disable GPU for headless (CPU rendering)
-                '--single-process',
-                '--no-zygote'
+                '--enable-webgl',
+                '--ignore-gpu-blocklist',
+                '--window-size=1280,720'
             ],
             defaultViewport: {
                 width: 1280,
@@ -66,10 +69,18 @@ class EmbodiedSimulation {
         
         // Monitor console logs from the page
         this.page.on('console', msg => {
-            if (msg.text().startsWith('Perception:')) {
+            const text = msg.text();
+            console.log('Browser console:', text); // Debug: see all console logs
+            
+            if (text.startsWith('Perception:')) {
                 // Capture perception logs from the world
-                this.handlePerceptionLog(msg.text());
+                this.handlePerceptionLog(text);
             }
+        });
+        
+        // Monitor page errors
+        this.page.on('pageerror', error => {
+            console.error('Page error:', error.message);
         });
         
         // Navigate to local build
@@ -80,7 +91,7 @@ class EmbodiedSimulation {
             waitUntil: 'networkidle0'
         });
         
-        console.log('World loaded, simulation running...');
+        console.log('World loaded, waiting for perceptions...');
         
         // Start perception loop
         this.startPerceptionLoop();

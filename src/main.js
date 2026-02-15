@@ -54,7 +54,7 @@ class World {
         );
         
         // Sensory perception system
-        this.senses = new SensorySystem(this.scene, this.camera, this.marvin);
+        this.senses = new SensorySystem(this.scene, this.camera, this.marvin, this.renderer);
 
         this.clock = new THREE.Clock();
 

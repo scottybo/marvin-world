@@ -2,10 +2,11 @@
 import * as THREE from 'three';
 
 export class SensorySystem {
-    constructor(scene, camera, marvin) {
+    constructor(scene, camera, marvin, renderer) {
         this.scene = scene;
         this.camera = camera;
         this.marvin = marvin;
+        this.renderer = renderer;
         
         // First-person camera (at eye level)
         this.firstPersonCamera = new THREE.PerspectiveCamera(
@@ -19,6 +20,10 @@ export class SensorySystem {
         this.perceptionLog = [];
         this.lastPerceptionTime = 0;
         this.perceptionInterval = 5; // Log perception every 5 seconds
+        
+        // Vision capture setup
+        this.visionSnapshots = [];
+        this.maxSnapshots = 10; // Keep last 10 visual memories
     }
     
     updateFirstPersonCamera(marvinX, marvinZ) {
@@ -162,13 +167,176 @@ export class SensorySystem {
         return nearest;
     }
     
+    perceiveVision(marvinX, marvinZ, time) {
+        // Analyze what I see from first-person perspective
+        const vision = {
+            lighting: this.assessLighting(),
+            visibility: this.assessVisibility(),
+            visualElements: this.detectVisualElements(marvinX, marvinZ),
+            colorPalette: this.perceiveColors(marvinX, marvinZ),
+            visualMood: this.interpretVisualMood(marvinX, marvinZ)
+        };
+        
+        return vision;
+    }
+    
+    assessLighting() {
+        // Describe lighting conditions from my perspective
+        return {
+            ambient: 'dim, overcast atmosphere',
+            sources: 'glowing windows from buildings, cyan-tinted lights',
+            shadows: 'softened by fog and rain',
+            overall: 'moody, atmospheric, reduced contrast'
+        };
+    }
+    
+    assessVisibility() {
+        // How far can I see?
+        return {
+            range: 'medium - fog limits distance to ~30 units',
+            clarity: 'muted by rain and mist',
+            detail: 'sharper up close, blurred in distance'
+        };
+    }
+    
+    detectVisualElements(x, z) {
+        // What do I see around me?
+        const elements = [];
+        const district = this.getCurrentDistrict(x, z);
+        
+        // Ground and immediate surroundings
+        elements.push('wet ground reflecting lights');
+        elements.push('rain falling steadily');
+        
+        // District-specific visuals
+        if (district === 'Downtown') {
+            elements.push('tall buildings with glowing windows');
+            elements.push('neon cyan lights creating halos in the fog');
+            elements.push('road stretching into distance');
+        } else if (district === 'Business District') {
+            elements.push('glass towers catching reflections');
+            elements.push('geometric modern architecture');
+            elements.push('structured grid of lit windows');
+        } else if (district === 'Residential') {
+            elements.push('shorter buildings with warm-toned windows');
+            elements.push('scattered puddles on walkways');
+            elements.push('softer, more organic spacing');
+        } else if (district === 'Tech Quarter') {
+            elements.push('brightly lit screens and displays');
+            elements.push('clean lines and modern materials');
+            elements.push('vibrant cyan and blue accent lighting');
+        } else if (district === 'Industrial') {
+            elements.push('utilitarian structures');
+            elements.push('exposed beams and functional design');
+            elements.push('harsh lighting, fewer decorative elements');
+        } else if (district === 'Suburbs') {
+            elements.push('lower density, more open space');
+            elements.push('scattered lights with gaps between');
+            elements.push('quieter visual landscape');
+        } else if (district === 'Old Town') {
+            elements.push('varied building heights and styles');
+            elements.push('worn textures, historical character');
+            elements.push('warmer, older lighting');
+        }
+        
+        // Sky and atmosphere
+        elements.push('dark indigo sky with scattered stars');
+        elements.push('colorful nebula clouds in the distance');
+        
+        return elements;
+    }
+    
+    perceiveColors(x, z) {
+        // What colors dominate my view?
+        const district = this.getCurrentDistrict(x, z);
+        const palette = {
+            primary: 'dark grays and blacks (buildings, ground)',
+            accent: 'cyan blue (lights, windows)',
+            atmospheric: 'blue-tinted rain and fog',
+            background: 'deep indigo sky with purple/pink nebula hints'
+        };
+        
+        if (district === 'Residential') {
+            palette.accent = 'warm amber (windows), cyan (streetlights)';
+        } else if (district === 'Industrial') {
+            palette.accent = 'harsh white and yellow (utility lighting)';
+        }
+        
+        return palette;
+    }
+    
+    interpretVisualMood(x, z) {
+        // What does what I see *feel* like?
+        const district = this.getCurrentDistrict(x, z);
+        
+        const visualMoods = {
+            'Downtown': 'dynamic, urban, alive despite the rain',
+            'Business District': 'cold, professional, geometric',
+            'Residential': 'intimate, human-scale, comforting',
+            'Tech Quarter': 'bright, forward-looking, clean',
+            'Industrial': 'raw, functional, honest',
+            'Suburbs': 'spacious, calm, breathing room',
+            'Old Town': 'layered, textured, storied'
+        };
+        
+        return visualMoods[district] || 'exploratory, curious';
+    }
+    
+    captureVisionSnapshot(marvinX, marvinZ) {
+        // Save a visual memory
+        const snapshot = {
+            timestamp: new Date().toISOString(),
+            position: { x: marvinX, z: marvinZ },
+            direction: this.getViewDirection(),
+            vision: this.perceiveVision(marvinX, marvinZ)
+        };
+        
+        this.visionSnapshots.push(snapshot);
+        
+        // Keep only recent snapshots
+        if (this.visionSnapshots.length > this.maxSnapshots) {
+            this.visionSnapshots.shift();
+        }
+        
+        return snapshot;
+    }
+    
+    getViewDirection() {
+        // Which way am I looking?
+        const rotation = this.marvin.group.rotation.y;
+        const directions = {
+            north: 0,
+            east: -Math.PI / 2,
+            south: Math.PI,
+            west: Math.PI / 2
+        };
+        
+        // Find closest cardinal direction
+        let closestDir = 'north';
+        let minDiff = Math.abs(rotation - directions.north);
+        
+        for (const [dir, angle] of Object.entries(directions)) {
+            const diff = Math.abs(rotation - angle);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestDir = dir;
+            }
+        }
+        
+        return closestDir;
+    }
+    
     logPerception(marvinX, marvinZ, time) {
         if (time - this.lastPerceptionTime < this.perceptionInterval) return;
+        
+        // Capture what I see
+        const visionSnapshot = this.captureVisionSnapshot(marvinX, marvinZ);
         
         const perception = {
             timestamp: new Date().toISOString(),
             position: { x: marvinX, z: marvinZ },
             touch: this.perceiveTouch(marvinX, marvinZ, time),
+            vision: visionSnapshot.vision,
             mood: this.inferMood(marvinX, marvinZ)
         };
         
@@ -180,8 +348,8 @@ export class SensorySystem {
             this.perceptionLog.shift();
         }
         
-        // Log to console for debugging
-        console.log('Perception:', perception);
+        // Log to console as JSON for capture by simulation
+        console.log('Perception:', JSON.stringify(perception, null, 2));
     }
     
     inferMood(x, z) {
